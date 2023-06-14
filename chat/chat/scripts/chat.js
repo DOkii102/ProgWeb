@@ -41,7 +41,7 @@ function authStateObserver(user) {
 
     var textoArea = document.getElementById("idText");
     textoArea.addEventListener("input", () => {
-      if (textoArea.value === "") {
+      if (textoArea.value.trim() === "") {
         document.getElementById("idEnviarMensagem").disabled = true;
       }
       else {
@@ -97,7 +97,6 @@ function authStateObserver(user) {
     nome.appendChild(nomeTexto);
     perfil.appendChild(nome);
 
-    document.getElementById("contatos-info").innerHTML = "";
   }
 }
 
@@ -201,10 +200,8 @@ function ajaxReceiveMessage(message_id) {
   fetch(servidor + message_id)
     .then(resposta => resposta.json())
     .then(mensagem => {
-      if (mensagem.receiver_name !== "System") {
 
         displayMessage(mensagem);
-      }
 
     })
     .catch(error => console.log(error))
@@ -254,7 +251,7 @@ function ajaxSendMessageLogin(message_id) {
       receiver_name: "System",
       visibility: true,
       message_id: message_id,
-      message_text: "Login",
+      message_text: "Entrou no chat!",
       color: "#999999"
     })
   }
@@ -310,7 +307,7 @@ function ajaxSendMessageLogout(message_id, sender_id, sender_name, sender_image)
       receiver_name: "System",
       visibility: true,
       message_id: message_id,
-      message_text: "Logout",
+      message_text: "Saiu do chat!",
       color: "#999999"
     })
   }
@@ -416,7 +413,7 @@ function displayMessage(data_message) {
     my_id = getUserId();
   else
     my_id = null;
-  if ( data_message.receiver_id === null || data_message.receiver_id === my_id  || data_message.sender_id === my_id) {
+  if (data_message.receiver_id === null || data_message.receiver_id === "0" || data_message.receiver_id === my_id  || data_message.sender_id === my_id) {
     
 
     let chat = document.getElementById("convesa-info")
