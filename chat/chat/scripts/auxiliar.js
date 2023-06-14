@@ -154,7 +154,7 @@ firebase.database()
     .startAt(Number(sessionStorage.getItem('timestamp')))
     .on('child_added', function(snap) {
       var data = snap.val();
-      setTimeout(function(){ ajaxReceiveMessage(snap.key); }, 1000);
+      setTimeout(function(){ ajaxReceiveMessage(snap.key); }, 2000);
     });
 
 // Carrega os usuários online a partir do momento que a página foi carregada 

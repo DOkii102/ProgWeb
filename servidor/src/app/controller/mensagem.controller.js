@@ -4,7 +4,7 @@ const {validationResult} = require("express-validator");
 class MensagemController{
     routes(){
         return {
-            "base":  "/chat/messages",
+            "base":  "/chat/messages/",
             "id": "/chat/messages/:id"
         }
         //"base": "/chat/messages",
@@ -15,12 +15,11 @@ class MensagemController{
 
     find(){
         return (req, resp) => {
-
+            //console.log(req.body);
             mensagemDAO.find(req.params.id)
                 .then(resultado => {
-                    let msg = resultado;
-                    if(msg){
-                        resp.status(200).json(msg);
+                    if(resultado.length > 0){
+                        resp.status(200).json(resultado[0]);
                     }
                     else{
                         resp.status(404).json({ mensagem: "Objeto não localizado" });

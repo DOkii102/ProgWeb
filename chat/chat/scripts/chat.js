@@ -1,3 +1,9 @@
+//"http://localhost:3000/chat/messages/";
+//"https://antonellis.com.br/ufms/pw/chat/messages/";
+
+const servidor = "https://antonellis.com.br/ufms/pw/chat/messages/";
+
+
 /* 
  *  Função para verificar mudanças no estado de autenticação do usuário
  *  Essa função é acionada quando o estado de autenticação é alterado.
@@ -50,14 +56,14 @@ function authStateObserver(user) {
       if (alvo.tagName !== "BUTTON")
         alvo = alvo.parentNode;
 
-        receiverId = alvo.id;
-        receiverName = alvo.lastChild.innerHTML;
-      
+      receiverId = alvo.id;
+      receiverName = alvo.lastChild.innerHTML;
+
       document.getElementById("idText").focus();
     })
 
     var grupo = document.getElementById("contatos-grupo");
-    grupo.addEventListener("click", ()=>{
+    grupo.addEventListener("click", () => {
 
       receiverId = null;
       receiverName = null;
@@ -142,7 +148,6 @@ function ajaxSendMessage(message_id) {
   const params = {
     method: "POST",
     headers: {
-      "Origin": "http://127.0.0.1:5500",
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
@@ -162,7 +167,7 @@ function ajaxSendMessage(message_id) {
 
   //"https://antonellis.com.br/ufms/pw/chat/messages"
   //"http://localhost:3000/chat/messages"
-  fetch("http://localhost:3000/chat/messages", params)
+  fetch(servidor, params)
     .catch(erro => console.log(erro))
 
   receiverId = null;
@@ -193,14 +198,12 @@ function ajaxReceiveMessage(message_id) {
 
   //"https://antonellis.com.br/ufms/pw/chat/messages/"
   //"http://localhost:3000/chat/messages/"
-  fetch("http://localhost:3000/chat/messages/" + message_id)
+  fetch(servidor + message_id)
     .then(resposta => resposta.json())
     .then(mensagem => {
-      if (mensagem['0'].receiver_name !== "System" && isUserSignedIn()) {
+      if (mensagem.receiver_name !== "System") {
 
-        showUserOnline(mensagem['0'].sender_id, mensagem['0'].sender_name, mensagem['0'].sender_image);
-
-        displayMessage(mensagem['0']);
+        displayMessage(mensagem);
       }
 
     })
@@ -240,7 +243,6 @@ function ajaxSendMessageLogin(message_id) {
   const params = {
     method: "POST",
     headers: {
-      "Origin": "http://127.0.0.1:5500",
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
@@ -252,14 +254,14 @@ function ajaxSendMessageLogin(message_id) {
       receiver_name: "System",
       visibility: true,
       message_id: message_id,
-      message_text: "",
+      message_text: "Login",
       color: "#999999"
     })
   }
 
   //"https://antonellis.com.br/ufms/pw/chat/messages"
   //"http://localhost:3000/chat/messages"
-  fetch("http://localhost:3000/chat/messages", params)
+  fetch(servidor, params)
     .then(resultado => resultado.json())
     .catch(erro => console.log("catch: " + erro))
 
@@ -297,7 +299,6 @@ function ajaxSendMessageLogout(message_id, sender_id, sender_name, sender_image)
   const params = {
     method: "POST",
     headers: {
-      "Origin": "http://127.0.0.1:5500",
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
@@ -309,14 +310,14 @@ function ajaxSendMessageLogout(message_id, sender_id, sender_name, sender_image)
       receiver_name: "System",
       visibility: true,
       message_id: message_id,
-      message_text: "",
+      message_text: "Logout",
       color: "#999999"
     })
   }
 
   //"https://antonellis.com.br/ufms/pw/chat/messages"
   //"http://localhost:3000/chat/messages"
-  fetch("http://localhost:3000/chat/messages", params)
+  fetch(servidor, params)
     .catch(erro => console.log("catch: " + erro))
 
 }
@@ -357,6 +358,27 @@ function showUserOnline(user_id, user_name, user_image) {
       }
     }
   }
+  else {
+    let user = document.getElementById(user_id);
+    if (!user) {
+      let usuarios = document.getElementById("contatos-info");
+      let botao = document.createElement("button");
+      botao.setAttribute("class", "contato");
+      botao.setAttribute("id", user_id);
+
+      let imagem = document.createElement("img");
+      imagem.setAttribute("src", user_image);
+      imagem.setAttribute("alt", "Imagem de perfil");
+
+      let paragrafo = document.createElement("p");
+      let nome = document.createTextNode(user_name)
+      paragrafo.append(nome);
+
+      botao.append(imagem);
+      botao.append(paragrafo);
+      usuarios.append(botao);
+    }
+  }
 
 
 
@@ -372,15 +394,10 @@ function hideUserOnline(user_id) {
   // o usuário que estiver autenticado no momento não possa conversar diretamente com ele.
   // Para encontrar este usuário, considere o código fornecido como parâmetro.
 
-  if (isUserSignedIn()) {
-    meu_id = getUserId();
-    if (meu_id !== user_id) {
-      let usuario = document.getElementById(user_id);
-      let usuarios = document.getElementById("contatos-info");
-      if (usuario)
-        usuarios.removeChild(usuario);
-    }
-  }
+  let usuario = document.getElementById(user_id);
+  let usuarios = document.getElementById("contatos-info");
+  if (usuario)
+    usuarios.removeChild(usuario);
 
 }
 
@@ -393,8 +410,15 @@ function hideUserOnline(user_id) {
 function displayMessage(data_message) {
 
   // Alterar a interface para mostrar a mensagem recebida
-  var my_id = getUserId();
-  if (data_message.receiver_id === my_id || data_message.receiver_id === null || data_message.sender_id === my_id) {
+
+  var my_id
+  if(isUserSignedIn())
+    my_id = getUserId();
+  else
+    my_id = null;
+  if ( data_message.receiver_id === null || data_message.receiver_id === my_id  || data_message.sender_id === my_id) {
+    
+
     let chat = document.getElementById("convesa-info")
     let paragrafo = document.createElement("p");
 
