@@ -17,19 +17,19 @@ const mensagem = mongoose.model("mensagem", {
 class MensagemModel {
   validacoes() {
     return [
-      validarNotEmpty("timestamp", "timestamp é necessário"),
-      validarNotEmpty("sender_id", "sender_id é necessário"),
-      validarNotEmpty("sender_name", "sender_name é necessário"),
-      validarNotEmpty("sender_image", "sender_image é necessário"),
-      validarNotEmpty("visibility", "visibility é necessário"),
-      validarNotEmpty("message_id", "message_id é necessário"),
-      validarNotEmpty("color", "color é necessário"),
+      this.validarNotEmpty("timestamp", "timestamp é necessário"),
+      this.validarNotEmpty("sender_id", "sender_id é necessário"),
+      this.validarNotEmpty("sender_name", "sender_name é necessário"),
+      this.validarNotEmpty("sender_image", "sender_image é necessário"),
+      this.validarNotEmpty("visibility", "visibility é necessário"),
+      this.validarNotEmpty("message_id", "message_id é necessário"),
+      this.validarNotEmpty("color", "color é necessário"),
       check("color").isHexColor(),
     ];
   }
 
   validarNotEmpty(campo, mensagem) {
-    check(campo).notEmpty().withMessage(mensagem);
+    return check(campo).notEmpty().withMessage(mensagem);
   }
 }
 
