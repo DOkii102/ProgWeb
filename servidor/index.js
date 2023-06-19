@@ -1,20 +1,23 @@
-const app = require("./src/config/custom-express")
+const app = require("./src/config/custom-express");
 const mongoose = require("./src/config/database");
+const path = require("node:path");
 
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
-//mongodb atlas
-//login: joaosartoreto; password: egGgyysZPl16NkAG
-//mongodb+srv://joaosartoreto:egGgyysZPl16NkAG@cluster0.dtdh0bu.mongodb.net/bancochat?retryWrites=true&w=majority
-//mongodb+srv://joaosartoreto:<password>@cluster0.dtdh0bu.mongodb.net/
+if (!process.env.MONGODB_URI) {
+  return console.log(
+    "Não foi possível carregar a URI para o Mongo DB do arquivo .env"
+  );
+}
 
-mongoose.cliente.set('strictQuery', true);
+mongoose.cliente.set("strictQuery", true);
 
-mongoose.cliente.connect("mongodb+srv://joaosartoreto:egGgyysZPl16NkAG@cluster0.dtdh0bu.mongodb.net/bancochat?retryWrites=true&w=majority")
-    .then(() => {
-        console.log("Conectamos ao MongoDb");
-        app.listen(3000, () => {
-            console.log("It is on");
-        })
-    })
-    .catch((error) => console.log(error))
-
+mongoose.cliente
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("Conectado ao MongoDB");
+    app.listen(3000, () => {
+      console.log("Servidor em execução na porta 3000");
+    });
+  })
+  .catch((error) => console.log(error));
